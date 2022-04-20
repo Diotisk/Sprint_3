@@ -1,3 +1,5 @@
+package ya.praktikum.tests;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
 import io.qameta.allure.TmsLink;
@@ -9,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ya.praktikum.models.ScooterOrder;
 
 import java.util.List;
 
@@ -54,7 +57,7 @@ public class ScooterCreateOrderTest {
     @TmsLink("TestCase-8")
     @Issue("BUG-8")
     public void createOrderPositiveTest() {
-        ScooterOrderTest scooterOrder = new ScooterOrderTest(firstName, lastName, address, metroStation,
+        ScooterOrder scooterOrder = new ScooterOrder(firstName, lastName, address, metroStation,
                 phone, rentTime, deliveryDate, comment, color);
         scooterOrder.setColor(colorOption);
 

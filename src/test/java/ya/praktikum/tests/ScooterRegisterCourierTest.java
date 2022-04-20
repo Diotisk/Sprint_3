@@ -1,15 +1,14 @@
+package ya.praktikum.tests;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
-import io.qameta.allure.Step;
 import io.qameta.allure.TmsLink;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
+import ya.praktikum.data.ScooterDeleteCourier;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -19,42 +18,6 @@ public class ScooterRegisterCourierTest {
     @Before
     public void setUp() {
         RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
-    }
-
-    /*
-    метод регистрации нового курьера
-    возвращает список из логина и пароля
-    если регистрация не удалась, возвращает пустой список
-    */
-    @Step("register new Courier and return login and password")
-    public ArrayList<String> registerNewCourierAndReturnLoginPassword() {
-
-        // с помощью библиотеки RandomStringUtils генерируем логин
-        // метод randomAlphabetic генерирует строку, состоящую только из букв, в качестве параметра передаём длину строки
-        String courierLogin = RandomStringUtils.randomAlphabetic(10);
-        // с помощью библиотеки RandomStringUtils генерируем пароль
-        String courierPassword = RandomStringUtils.randomAlphabetic(10);
-        // с помощью библиотеки RandomStringUtils генерируем имя курьера
-        String courierFirstName = RandomStringUtils.randomAlphabetic(10);
-
-        // создаём список, чтобы метод мог его вернуть
-        ArrayList<String> loginPass = new ArrayList<>();
-
-        // собираем в строку тело запроса на регистрацию, подставляя в него логин, пароль и имя курьера
-        String registerRequestBody = "{\"login\":\"" + courierLogin + "\"," + "\"password\":\"" + courierPassword + "\"," + "\"firstName\":\"" + courierFirstName + "\"}";
-
-        // отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response класса Response
-        Response response = given().header("Content-type", "application/json").and().body(registerRequestBody).when().post("http://qa-scooter.praktikum-services.ru/api/v1/courier");
-
-        // если регистрация прошла успешно (код ответа 201), добавляем в список логин и пароль курьера
-        if (response.statusCode() == 201 && response.jsonPath().getBoolean("ok")) {
-            loginPass.add(courierLogin);
-            loginPass.add(courierPassword);
-        }
-
-        // возвращаем список
-        return loginPass;
-
     }
 
     @Test
@@ -78,8 +41,8 @@ public class ScooterRegisterCourierTest {
         // отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response класса Response
         given().header("Content-type", "application/json").and().body(registerRequestBody).when().post("/api/v1/courier").then().statusCode(201).and().assertThat().body("ok", equalTo(true));
 
-        ScooterDeleteCourierTest scooterDeleteCourier = new ScooterDeleteCourierTest();
-        scooterDeleteCourier.deleteTestCourierDataForTest(courierLogin, courierPassword);
+        ScooterDeleteCourier scooterDeleteCourier = new ScooterDeleteCourier();
+        scooterDeleteCourier.deleteTestCourierData(courierLogin, courierPassword);
     }
 
     @Test
@@ -140,7 +103,7 @@ public class ScooterRegisterCourierTest {
 
         given().header("Content-type", "application/json").and().body(anotherRegisterRequestBody).when().post("/api/v1/courier").then().statusCode(409).and().assertThat().body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
 
-        ScooterDeleteCourierTest scooterDeleteCourier = new ScooterDeleteCourierTest();
-        scooterDeleteCourier.deleteTestCourierDataForTest(courierLogin, courierPassword);
+        ScooterDeleteCourier scooterDeleteCourier = new ScooterDeleteCourier();
+        scooterDeleteCourier.deleteTestCourierData(courierLogin, courierPassword);
     }
 }

@@ -1,6 +1,8 @@
+package ya.praktikum.models;
+
 import java.util.List;
 
-public class ScooterOrderTest {
+public class ScooterOrder {
 
     private String firstName;
     private String lastName;
@@ -12,7 +14,7 @@ public class ScooterOrderTest {
     private String comment;
     private List<String> color;
 
-    public ScooterOrderTest(String firstName, String lastName, String address, String metroStation, String phone,
+    public ScooterOrder(String firstName, String lastName, String address, String metroStation, String phone,
                         String rentTime, String deliveryDate, String comment) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -24,7 +26,7 @@ public class ScooterOrderTest {
         this.comment = comment;
     }
 
-    public ScooterOrderTest(String firstName, String lastName, String address, String metroStation, String phone,
+    public ScooterOrder(String firstName, String lastName, String address, String metroStation, String phone,
                         String rentTime, String deliveryDate, String comment, List<String> color) {
         this.firstName = firstName;
         this.lastName = lastName;

@@ -1,3 +1,5 @@
+package ya.praktikum.tests;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
 import io.qameta.allure.TmsLink;

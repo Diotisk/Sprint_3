@@ -1,10 +1,12 @@
+package ya.praktikum.models;
+
 import java.util.ArrayList;
 
-public class ScooterColorTest {
+public class ScooterColor {
 
     private ArrayList<String> color;
 
-    public ScooterColorTest(ArrayList<String> color) {
+    public ScooterColor(ArrayList<String> color) {
         this.color = color;
     }
 
