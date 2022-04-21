@@ -8,8 +8,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
+import ya.praktikum.data.Order;
 
-import static io.restassured.RestAssured.given;
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class ScooterGetOrdersTest {
@@ -26,10 +28,11 @@ public class ScooterGetOrdersTest {
     @Issue("BUG-9")
     public void getOrdersPositiveTest() {
 
-        Response response = given()
-                .header("Content-type", "application/json")
-                .get("/api/v1/orders");
-        response.then().assertThat().body("orders", notNullValue());
+        Order testOrder = new Order();
+        testOrder.create(List.of("GREY"));
+
+        Response actualResult = testOrder.getOrders();
+        actualResult.then().assertThat().body("orders", notNullValue());
 
     }
 }

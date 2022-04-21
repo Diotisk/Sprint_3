@@ -37,17 +37,22 @@ public class ScooterLoginCourierTest {
         ScooterRegisterCourier scooterRegisterCourier = new ScooterRegisterCourier();
         ArrayList<String> courierData = scooterRegisterCourier.registerNewCourierAndReturnLoginPassword();
 
-        ScooterLoginCourier scooterLoginCourier = new ScooterLoginCourier();
-        String loginResponse = scooterLoginCourier.loginCourier(
+        ScooterCourierCredentials courierCredentials = new ScooterCourierCredentials(
                 courierData.get(0),
-                courierData.get(1)
+                courierData.get(1),
+                RandomStringUtils.randomAlphabetic(10)
         );
 
-
-        String loginRequestBody = "{\"login\":\"" + courierData.get(0) + "\"," + "\"password\":\"" + courierData.get(1) + "\"}";
-
-        Response response = given().header("Content-type", "application/json").and().body(loginRequestBody).when().post("/api/v1/courier/login");
-        response.then().assertThat().body("id", notNullValue()).and().statusCode(200);
+                given()
+                        .header("Content-type", "application/json")
+                        .body(courierCredentials)
+                        .when()
+                        .post("/api/v1/courier/login")
+                        .then()
+                        .assertThat()
+                        .body("id", notNullValue())
+                        .and()
+                        .statusCode(200);
 
         ScooterDeleteCourier scooterDeleteCourierTest = new ScooterDeleteCourier();
         scooterDeleteCourierTest.deleteTestCourierData(courierData.get(0), courierData.get(1));
@@ -62,10 +67,20 @@ public class ScooterLoginCourierTest {
         ScooterRegisterCourier scooterRegisterCourier = new ScooterRegisterCourier();
         ArrayList<String> courierData = scooterRegisterCourier.registerNewCourierAndReturnLoginPassword();
 
-        String loginRequestBody = "{\"login\":\"" + "" + "\"," + "\"password\":\"" + courierData.get(1) + "\"}";
+        ScooterCourierCredentials courierCredentials = new ScooterCourierCredentials(
+                "",
+                courierData.get(1),
+                RandomStringUtils.randomAlphabetic(10)
+        );
 
-        Response response = given().header("Content-type", "application/json").and().body(loginRequestBody).when().post("/api/v1/courier/login");
-        response.then().assertThat().body("message", equalTo("Недостаточно данных для входа")).and().statusCode(400);
+                given()
+                        .header("Content-type", "application/json")
+                        .body(courierCredentials)
+                        .when()
+                        .post("/api/v1/courier/login")
+                        .then().assertThat().body("message",
+                                equalTo("Недостаточно данных для входа"))
+                        .and().statusCode(400);
 
         ScooterDeleteCourier scooterDeleteCourierTest = new ScooterDeleteCourier();
         scooterDeleteCourierTest.deleteTestCourierData(courierData.get(0), courierData.get(1));
@@ -80,10 +95,20 @@ public class ScooterLoginCourierTest {
         ScooterRegisterCourier scooterRegisterCourier = new ScooterRegisterCourier();
         ArrayList<String> courierData = scooterRegisterCourier.registerNewCourierAndReturnLoginPassword();
 
-        String loginRequestBody = "{\"login\":\"" + courierData.get(0) + "\"," + "\"password\":\"" + "" + "\"}";
+        ScooterCourierCredentials courierCredentials = new ScooterCourierCredentials(
+                courierData.get(0),
+                "",
+                RandomStringUtils.randomAlphabetic(10)
+        );
 
-        Response response = given().header("Content-type", "application/json").and().body(loginRequestBody).when().post("/api/v1/courier/login");
-        response.then().assertThat().body("message", equalTo("Недостаточно данных для входа")).and().statusCode(400);
+                given()
+                        .header("Content-type", "application/json")
+                        .body(courierCredentials)
+                        .when()
+                        .post("/api/v1/courier/login")
+                        .then().assertThat().body("message",
+                                equalTo("Недостаточно данных для входа"))
+                        .and().statusCode(400);
 
         ScooterDeleteCourier scooterDeleteCourierTest = new ScooterDeleteCourier();
         scooterDeleteCourierTest.deleteTestCourierData(courierData.get(0), courierData.get(1));
@@ -101,9 +126,19 @@ public class ScooterLoginCourierTest {
         ScooterDeleteCourier scooterDeleteCourierTest = new ScooterDeleteCourier();
         scooterDeleteCourierTest.deleteTestCourierData(courierData.get(0), courierData.get(1));
 
-        String loginRequestBody = "{\"login\":\"" + courierData.get(0) + "\"," + "\"password\":\"" + courierData.get(1) + "\"}";
+        ScooterCourierCredentials courierCredentials = new ScooterCourierCredentials(
+                courierData.get(0),
+                courierData.get(1),
+                RandomStringUtils.randomAlphabetic(10)
+        );
 
-        Response response = given().header("Content-type", "application/json").and().body(loginRequestBody).when().post("/api/v1/courier/login");
-        response.then().assertThat().body("message", equalTo("Учетная запись не найдена")).and().statusCode(404);
+                given()
+                        .header("Content-type", "application/json")
+                        .body(courierCredentials)
+                        .when()
+                        .post("/api/v1/courier/login")
+                        .then().assertThat().body("message",
+                                equalTo("Учетная запись не найдена"))
+                        .and().statusCode(404);
     }
 }

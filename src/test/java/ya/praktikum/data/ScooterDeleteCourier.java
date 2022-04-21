@@ -24,7 +24,7 @@ public class ScooterDeleteCourier {
                 .and()
                 .body(deleteRequestBody)
                 .when()
-                .delete("http://qa-scooter.praktikum-services.ru/api/v1/courier/" + courierId)
+                .delete("/api/v1/courier/" + courierId)
                 .then().statusCode(200)
                 .and()
                 .assertThat().body("ok", equalTo(true));
