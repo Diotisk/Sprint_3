@@ -9,6 +9,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import ya.praktikum.data.ScooterDeleteCourier;
+import ya.praktikum.data.ScooterRegisterCourier;
+import ya.praktikum.models.ScooterCourierCredentials;
+
+import java.util.ArrayList;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -27,22 +31,11 @@ public class ScooterRegisterCourierTest {
     @Issue("BUG-1")
     public void registerNewCourierCheckStatusAndResponsePositiveTest() {
 
-        // с помощью библиотеки RandomStringUtils генерируем логин
-        // метод randomAlphabetic генерирует строку, состоящую только из букв, в качестве параметра передаём длину строки
-        String courierLogin = RandomStringUtils.randomAlphabetic(10);
-        // с помощью библиотеки RandomStringUtils генерируем пароль
-        String courierPassword = RandomStringUtils.randomAlphabetic(10);
-        // с помощью библиотеки RandomStringUtils генерируем имя курьера
-        String courierFirstName = RandomStringUtils.randomAlphabetic(10);
-
-        // собираем в строку тело запроса на регистрацию, подставляя в него логин, пароль и имя курьера
-        String registerRequestBody = "{\"login\":\"" + courierLogin + "\"," + "\"password\":\"" + courierPassword + "\"," + "\"firstName\":\"" + courierFirstName + "\"}";
-
-        // отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response класса Response
-        given().header("Content-type", "application/json").and().body(registerRequestBody).when().post("/api/v1/courier").then().statusCode(201).and().assertThat().body("ok", equalTo(true));
+        ScooterRegisterCourier scooterRegisterCourier = new ScooterRegisterCourier();
+        ArrayList<String> courierLoginPass = scooterRegisterCourier.registerNewCourierAndReturnLoginPassword();
 
         ScooterDeleteCourier scooterDeleteCourier = new ScooterDeleteCourier();
-        scooterDeleteCourier.deleteTestCourierData(courierLogin, courierPassword);
+        scooterDeleteCourier.deleteTestCourierData(courierLoginPass.get(0), courierLoginPass.get(1));
     }
 
     @Test
@@ -51,17 +44,22 @@ public class ScooterRegisterCourierTest {
     @TmsLink("TestCase-2")
     @Issue("BUG-2")
     public void registerNewCourierWithEmptyLoginNegativeTest() {
-        String courierLogin = "";
-        // с помощью библиотеки RandomStringUtils генерируем пароль
-        String courierPassword = RandomStringUtils.randomAlphabetic(10);
-        // с помощью библиотеки RandomStringUtils генерируем имя курьера
-        String courierFirstName = RandomStringUtils.randomAlphabetic(10);
 
-        // собираем в строку тело запроса на регистрацию, подставляя в него логин, пароль и имя курьера
-        String registerRequestBody = "{\"login\":\"" + courierLogin + "\"," + "\"password\":\"" + courierPassword + "\"," + "\"firstName\":\"" + courierFirstName + "\"}";
+        ScooterCourierCredentials courierCredentials = new ScooterCourierCredentials(
+                "",
+                RandomStringUtils.randomAlphabetic(10),
+                RandomStringUtils.randomAlphabetic(10)
+        );
 
-        // отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response класса Response
-        given().header("Content-type", "application/json").and().body(registerRequestBody).when().post("/api/v1/courier").then().statusCode(400).and().assertThat().body("message", equalTo("Недостаточно данных для создания учетной записи"));
+        given()
+                .header("Content-type", "application/json")
+                .body(courierCredentials)
+                .when()
+                .post("/api/v1/courier")
+                .then().statusCode(400)
+                .and()
+                .assertThat().body("message",
+                        equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @Test
@@ -70,15 +68,22 @@ public class ScooterRegisterCourierTest {
     @TmsLink("TestCase-3")
     @Issue("BUG-3")
     public void registerNewCourierWithEmptyPasswordNegativeTest() {
-        String courierLogin = RandomStringUtils.randomAlphabetic(10);
-        String courierPassword = "";
-        String courierFirstName = RandomStringUtils.randomAlphabetic(10);
 
-        // собираем в строку тело запроса на регистрацию, подставляя в него логин, пароль и имя курьера
-        String registerRequestBody = "{\"login\":\"" + courierLogin + "\"," + "\"password\":\"" + courierPassword + "\"," + "\"firstName\":\"" + courierFirstName + "\"}";
+        ScooterCourierCredentials courierCredentials = new ScooterCourierCredentials(
+                RandomStringUtils.randomAlphabetic(10),
+                "",
+                RandomStringUtils.randomAlphabetic(10)
+        );
 
-        // отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response класса Response
-        given().header("Content-type", "application/json").and().body(registerRequestBody).when().post("/api/v1/courier").then().statusCode(400).and().assertThat().body("message", equalTo("Недостаточно данных для создания учетной записи"));
+        given()
+                .header("Content-type", "application/json")
+                .body(courierCredentials)
+                .when()
+                .post("/api/v1/courier")
+                .then().statusCode(400)
+                .and()
+                .assertThat().body("message",
+                        equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @Test
@@ -87,23 +92,40 @@ public class ScooterRegisterCourierTest {
     @TmsLink("TestCase-4")
     @Issue("BUG-4")
     public void registerNewCouriersWithEqualLoginsNegativeTest() {
-        String courierLogin = RandomStringUtils.randomAlphabetic(10);
-        String courierPassword = RandomStringUtils.randomAlphabetic(10);
-        String courierFirstName = RandomStringUtils.randomAlphabetic(10);
 
-        String anotherCourierLogin = courierLogin;
-        String anotherCourierPassword = RandomStringUtils.randomAlphabetic(10);
-        String anotherCourierFirstName = RandomStringUtils.randomAlphabetic(10);
+        ScooterCourierCredentials courierCredentialsOne = new ScooterCourierCredentials(
+                RandomStringUtils.randomAlphabetic(10),
+                RandomStringUtils.randomAlphabetic(10),
+                RandomStringUtils.randomAlphabetic(10)
+        );
 
-        String registerRequestBody = "{\"login\":\"" + courierLogin + "\"," + "\"password\":\"" + courierPassword + "\"," + "\"firstName\":\"" + courierFirstName + "\"}";
+        ScooterCourierCredentials courierCredentialsTwo = new ScooterCourierCredentials(
+                courierCredentialsOne.getLogin(),
+                RandomStringUtils.randomAlphabetic(10),
+                RandomStringUtils.randomAlphabetic(10)
+        );
 
-        String anotherRegisterRequestBody = "{\"login\":\"" + anotherCourierLogin + "\"," + "\"password\":\"" + anotherCourierPassword + "\"," + "\"firstName\":\"" + anotherCourierFirstName + "\"}";
+        given()
+                .header("Content-type", "application/json")
+                .body(courierCredentialsOne)
+                .when()
+                .post("/api/v1/courier")
+                .then().statusCode(201)
+                .and()
+                .assertThat().body("ok", equalTo(true));
 
-        given().header("Content-type", "application/json").and().body(registerRequestBody).when().post("/api/v1/courier").then().statusCode(201).and().assertThat().body("ok", equalTo(true));
-
-        given().header("Content-type", "application/json").and().body(anotherRegisterRequestBody).when().post("/api/v1/courier").then().statusCode(409).and().assertThat().body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
+        given()
+                .header("Content-type", "application/json")
+                .body(courierCredentialsTwo)
+                .when()
+                .post("/api/v1/courier")
+                .then().statusCode(409)
+                .and()
+                .assertThat().body("message",
+                        equalTo("Этот логин уже используется. Попробуйте другой."));
 
         ScooterDeleteCourier scooterDeleteCourier = new ScooterDeleteCourier();
-        scooterDeleteCourier.deleteTestCourierData(courierLogin, courierPassword);
+        scooterDeleteCourier.deleteTestCourierData(courierCredentialsOne.getLogin(),
+                courierCredentialsOne.getPassword());
     }
 }

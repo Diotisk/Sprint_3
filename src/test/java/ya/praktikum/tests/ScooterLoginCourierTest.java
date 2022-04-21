@@ -6,10 +6,13 @@ import io.qameta.allure.TmsLink;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import ya.praktikum.data.ScooterDeleteCourier;
+import ya.praktikum.data.ScooterLoginCourier;
 import ya.praktikum.data.ScooterRegisterCourier;
+import ya.praktikum.models.ScooterCourierCredentials;
 
 import java.util.ArrayList;
 
@@ -33,6 +36,13 @@ public class ScooterLoginCourierTest {
 
         ScooterRegisterCourier scooterRegisterCourier = new ScooterRegisterCourier();
         ArrayList<String> courierData = scooterRegisterCourier.registerNewCourierAndReturnLoginPassword();
+
+        ScooterLoginCourier scooterLoginCourier = new ScooterLoginCourier();
+        String loginResponse = scooterLoginCourier.loginCourier(
+                courierData.get(0),
+                courierData.get(1)
+        );
+
 
         String loginRequestBody = "{\"login\":\"" + courierData.get(0) + "\"," + "\"password\":\"" + courierData.get(1) + "\"}";
 
